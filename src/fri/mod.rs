@@ -12,6 +12,7 @@ pub mod common;
 pub mod parameters;
 pub mod prover;
 pub mod verifier;
+pub mod split_fri;
 
 #[derive(Default)]
 pub struct Fri<F, MerkleConfig, FSConfig> {
