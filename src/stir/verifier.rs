@@ -27,6 +27,8 @@ pub enum OracleType<F: FftField> {
 impl<F: FftField> VerificationState<F> {
     // Now, I need to query f_i at a given point.
     // This induces some query to the previous oracle, whose answer I get
+
+    // NP compute f_i^ given oracle access tof_i
     pub fn query(
         &self,
         evaluation_point: F,
@@ -180,6 +182,7 @@ where
             verification_state = round_result.unwrap();
         }
 
+        // NP erratum consinstency
         // Now, we sample the last points that we want to check consisntency at
         let final_repetitions = self.parameters.repetitions[self.parameters.num_rounds];
         let scaling_factor = verification_state.domain_size / self.parameters.folding_factor;

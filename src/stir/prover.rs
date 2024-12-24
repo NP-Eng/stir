@@ -277,6 +277,7 @@ where
             .map(|(y, x)| (*x, *y))
             .collect::<Vec<_>>();
 
+        // quotient_answers = (\mathcal{G}, g(\mathcal{G}))
         let quotient_answers = stir_randomness
             .iter()
             .map(|x| (*x, g_poly.evaluate(x)))
@@ -289,6 +290,7 @@ where
             .chain(stir_randomness.iter().cloned())
             .collect();
 
+        // ans_polynomial = Int_calG
         let ans_polynomial = poly_utils::interpolation::naive_interpolation(&quotient_answers);
 
         // NP ask Giacomo what this is
@@ -298,11 +300,14 @@ where
             let den_polynomial = DensePolynomial::from_coefficients_vec(vec![-x, F::ONE]);
             shake_polynomial = shake_polynomial + (&num_polynomial / &den_polynomial);
         }
+        // sum_{r \in cal_G} (Int_calG - g(r)) / (x - r_i) 
 
         // The quotient_polynomial is then computed
         let vanishing_poly = poly_utils::interpolation::vanishing_poly(&quotient_set);
         // Resue the ans_polynomial to compute the quotient_polynomial
         let numerator = &g_poly + &ans_polynomial;
+
+        // quotient_polynomial = g_i^'
         let quotient_polynomial = &numerator / &vanishing_poly;
 
         // This is the polynomial 1 + r * x + r^2 * x^2 + ... + r^n * x^n where n = |quotient_set|
@@ -312,6 +317,7 @@ where
                 .collect(),
         );
 
+        // f_i^
         let witness_polynomial = &quotient_polynomial * &scaling_polynomial;
 
 
