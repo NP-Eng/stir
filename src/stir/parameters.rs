@@ -109,6 +109,7 @@ where
             degrees,
             rates,
             pow_bits,
+            // NP Ask Giacomo why always 2
             ood_samples: 2,
             repetitions,
         }

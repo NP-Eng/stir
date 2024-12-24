@@ -33,8 +33,10 @@ impl<F, MerkleConfig, FSConfig> Stir<F, MerkleConfig, FSConfig> {
 impl<F, MerkleConfig, FSConfig> LowDegreeTest<F, MerkleConfig, FSConfig>
     for Stir<F, MerkleConfig, FSConfig>
 where
+    // NP PrimeField already bound to FftField
     F: FftField + PrimeField + Absorb,
     MerkleConfig: Config<Leaf = Vec<F>>,
+    // NP Config::InnerDigest already bound to Absorb
     MerkleConfig::InnerDigest: Absorb,
     FSConfig: CryptographicSponge,
     FSConfig::Config: Clone,

@@ -265,11 +265,11 @@ where
             .map(|index| {
                 witness
                     .domain
+                    // NP Is this inefficient? (k doesn't change across iteratinos); if so, move outside of loop
                     .scale(self.parameters.folding_factor)
                     .element(*index)
             })
             .collect();
-
 
         let beta_answers = betas
             .iter()
@@ -291,6 +291,7 @@ where
 
         let ans_polynomial = poly_utils::interpolation::naive_interpolation(&quotient_answers);
 
+        // NP ask Giacomo what this is
         let mut shake_polynomial = DensePolynomial::from_coefficients_vec(vec![]);
         for (x, y) in quotient_answers {
             let num_polynomial = &ans_polynomial - &DensePolynomial::from_coefficients_vec(vec![y]);
@@ -312,6 +313,9 @@ where
         );
 
         let witness_polynomial = &quotient_polynomial * &scaling_polynomial;
+
+
+        // f' = [g - ans_polynomial]/[(x - a1)(x - a2)]
 
         (
             WitnessExtended {
