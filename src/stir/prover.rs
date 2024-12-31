@@ -260,6 +260,7 @@ where
 
         // Here, we update the witness
         // First, compute the set of points we are actually going to query at
+        // TODO these are the r_{i, j}^shift, 
         let stir_randomness: Vec<_> = stir_randomness_indexes
             .iter()
             .map(|index| {

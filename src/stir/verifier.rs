@@ -222,13 +222,25 @@ where
     FSConfig: CryptographicSponge,
     FSConfig::Config: Clone,
 {
+    // NP Ask Giacomo where this algorithm can be studied
     fn compute_folded_evaluations(
         &self,
         verification_state: &VerificationState<F>,
+        // NP list of {j_1, ..., j_n} such that r_{i, t}^shift = coset_shift * subgroup_generator^{j_t}
         stir_randomness_indexes: Vec<usize>,
         oracle_answers: Vec<Vec<F>>,
     ) -> Vec<(F, F)> {
         let scaling_factor = verification_state.domain_size / self.parameters.folding_factor;
+        // NP verification_state.domain_gen = generator of (the subgroup whose coset is) L_i
+        // NP scaling_factor = size of the subgroup whose coset is L_i / k_i
+        // NP generator = generator of the subgroup from which the r_{i, j}^shift are sampled
+
+        // NP w generates L of size 32
+        // NP we want to sample the r_{i, j}^shift from a subgroup U of size 4
+        // NP the folding factor is 8 (k_i in the paper)
+        // NP the scaling factor is 32 / 8 = 4
+        // NP the generator of U is w^scaling_factor = w^4
+        // NP TODO shouldn't this say .pow([folding_factor as u64]);
         let generator = verification_state.domain_gen.pow([scaling_factor as u64]);
 
         // We do a single batch inversion
@@ -449,6 +461,7 @@ where
         );
 
         // The quotient definining the function
+        // NP Ans_i in Verifier/Main loop/(b)
         let quotient_answers: Vec<_> = ood_randomness
             .into_iter()
             .zip(&round_proof.betas)
@@ -457,15 +470,22 @@ where
             .collect();
         let interpolating_polynomial = round_proof.ans_polynomial.clone();
 
+        // NP what is shake_randomness? what is the shake polynomial?
+        // NP ans_eval = f_i^ (shake_randomness)
         let ans_eval = interpolating_polynomial.evaluate(&shake_randomness);
         let shake_eval = round_proof.shake_polynomial.evaluate(&shake_randomness);
 
+        // NP denoms = (shake_randomness - x) for x in G_i
         let mut denoms: Vec<_> = quotient_answers
             .iter()
             .map(|(x, _)| shake_randomness - x)
             .collect();
 
+        // NP denoms = 1 / (shake_randomness - x) for x in G_i
         batch_inversion(&mut denoms);
+
+        // NP sum((f_i(shake_randomness) - f_i(r)) / (shake_randomness - r) for r in G_i) = shake_eval
+        // NP this is the slope of the line connecting the points of f_i at x = shake_randomness and x = r
         // TODO: This maybe should be better
         if shake_eval
             != quotient_answers
