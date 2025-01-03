@@ -13,6 +13,9 @@ pub mod parameters;
 pub mod prover;
 pub mod verifier;
 
+#[cfg(test)]
+pub mod np_tests;
+
 #[derive(Default)]
 pub struct Stir<F, MerkleConfig, FSConfig> {
     _field: PhantomData<F>,
