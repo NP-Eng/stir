@@ -38,6 +38,7 @@ impl<F: FftField> Domain<F> {
     // Takes the underlying backing_domain = <w>, and computes the new domain
     // <w^power> (note this will have size |L| / power)
     // NOTE: This should not be mixed with scale_offset
+    // NP TODO ask Giacomo: this also scales the shift, right? Is the name good?
     fn scale_generator_by(&self, power: usize) -> GeneralEvaluationDomain<F> {
         let starting_size = self.size();
         assert_eq!(starting_size % power, 0);
