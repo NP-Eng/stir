@@ -89,6 +89,7 @@ impl<F: FftField> Domain<F> {
         }
     }
 
+    // NP // Take a domain L_0 = o * <w> and compute a new domain L_1 = self.root_of_unity * o^power * <w^power>.
     // Take a domain L_0 = o * <w> and compute a new domain L_1 = w * o^power * <w^power>.
     // Note that L_0^k \cap L_1 = \emptyset for k > power.
     fn scale_with_offset(&self, power: usize) -> GeneralEvaluationDomain<F> {
