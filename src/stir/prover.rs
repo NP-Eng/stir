@@ -318,6 +318,7 @@ where
         let quotient_polynomial = &numerator / &vanishing_poly;
 
         // This is the polynomial 1 + r * x + r^2 * x^2 + ... + r^n * x^n where n = |quotient_set|
+        // NP TODO: Better use iter::successor
         let scaling_polynomial = DensePolynomial::from_coefficients_vec(
             (0..quotient_set.len() + 1)
                 .map(|i| comb_randomness.pow([i as u64]))
