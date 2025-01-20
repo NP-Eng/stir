@@ -306,6 +306,8 @@ where
         // The quotient_polynomial is then computed
         let vanishing_poly = poly_utils::interpolation::vanishing_poly(&quotient_set);
         // Resue the ans_polynomial to compute the quotient_polynomial
+        // NP TODO why is this a plus? it doesn't vanish - with the minus it does
+        // NP TODO there's likely a vulnerability in the verifier, since the division DOES have a (non-zero remainder)
         let numerator = &g_poly + &ans_polynomial;
 
         // quotient_polynomial = g_i^'
