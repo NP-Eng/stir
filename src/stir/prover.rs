@@ -119,6 +119,7 @@ where
         sponge.absorb(&witness.merkle_tree.root());
         let folding_randomness = sponge.squeeze_field_elements(1)[0];
 
+        // merkle_tree.leaves = polynomial.folded().evals().stacked()
         let mut witness = WitnessExtended {
             domain: witness.domain,
             polynomial: witness.polynomial,
@@ -230,6 +231,9 @@ where
         // Proximity generator
         let comb_randomness: F = sponge.squeeze_field_elements(1)[0];
 
+        // NP TODO why is folding randomness computed here and not at the end of the round?
+        // In particular, why are other randomnesses such as shake_randomness computed after this?
+
         // Folding randomness for next round
         let folding_randomness = sponge.squeeze_field_elements(1)[0];
 
@@ -328,13 +332,15 @@ where
 
         (
             WitnessExtended {
+                // Round 0 (receive w_0)       // Round 1 (receive w_1)
                 domain: g_domain,
-                polynomial: witness_polynomial,
+                polynomial: witness_polynomial, // f_0                         // f_1
                 merkle_tree: g_merkle,
-                folded_evals: g_folded_evaluations,
+                folded_evals: g_folded_evaluations, // evals of f_0                // evals of fold(f_0, r_0) = g_1 [theoretically, f_1 = deg_cor(quot(g_1))]
                 num_round: witness.num_round + 1,
                 folding_randomness,
             },
+            // ----------------------      // Verifier starts at round 1, which queries w_0 and w_1
             RoundProof {
                 g_root,
                 betas,

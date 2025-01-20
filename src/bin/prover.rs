@@ -142,11 +142,7 @@ fn main() {
             .unwrap();
         }
 
-        (
-            stir_prover_time,
-            stir_prover_hashes,
-            stir_argument_size,
-        )
+        (stir_prover_time, stir_prover_hashes, stir_argument_size)
     };
 
     //FRI

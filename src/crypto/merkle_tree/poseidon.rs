@@ -17,7 +17,9 @@ use crate::crypto::fs;
 use super::HashCounter;
 
 // We need 2 field elements for security
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Default, CanonicalSerialize, CanonicalDeserialize)]
+#[derive(
+    Clone, Copy, Debug, Eq, PartialEq, Hash, Default, CanonicalSerialize, CanonicalDeserialize,
+)]
 pub struct PoseidonDigest<F: PrimeField>([F; 2]);
 
 impl<DigestField: PrimeField + Absorb> Absorb for PoseidonDigest<DigestField> {
@@ -91,7 +93,6 @@ impl<F: PrimeField + Absorb> TwoToOneCRHScheme for PoseidonTwoToOneCRH<F> {
         sponge.absorb(&right_input.0[1]);
         let res = sponge.squeeze_field_elements::<F>(2);
         Ok(PoseidonDigest([res[0], res[1]]))
-
     }
 }
 
