@@ -90,6 +90,26 @@ impl<F: FftField> Domain<F> {
         }
     }
 
+    // NP TODO: disallow folding factor 2^0
+
+    // * a) L0 = <w> (shift = 1, generator = w) <-> [0... 2^n0]
+    //      L1 = w * L0^2 (shift = w, generator = w^2)         [1 + 2k: k...]  L
+    //      L2 = w * L1^2 (shift = w^3, generator = w^4)       [1 * 2(1 + 2k)] =  [3 + 4k: ...]
+
+    // NP TODO
+    // <w>
+    // w * <w^2>
+    // w * <w^4>
+    // w * <w^8>
+    // ...
+
+    // * b) L0 = <w> (shift = 1, generator = w)
+    //      L1 = w * U^2 (shift = w, generator = w^2)
+    //      L2 = w^2 * U^2 (shift = w^2, generator = w^4)
+
+    // L0 = w * <w> = <w>
+    // L1 = w * <w^2>
+
     // NP // Take a domain L_0 = o * <w> and compute a new domain L_1 = self.root_of_unity * o^power * <w^power>.
     // Take a domain L_0 = o * <w> and compute a new domain L_1 = w * o^power * <w^power>.
     // Note that L_0^k \cap L_1 = \emptyset for k > power.

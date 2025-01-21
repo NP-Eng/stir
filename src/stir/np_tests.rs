@@ -1,16 +1,15 @@
 use ark_std::marker::PhantomData;
 
-use crate::parameters::{Parameters, SoundnessType};
-use crate::crypto::{fs::poseidon, merkle_tree::blake3};
 use super::parameters::FullParameters;
-
+use crate::crypto::{fs::poseidon, merkle_tree::blake3};
+use crate::parameters::{Parameters, SoundnessType};
 
 #[test]
 fn create_params() {
-
     type F = crate::crypto::fields::Field256;
 
-    let (leaf_hash_params, two_to_one_params) = blake3::default_config::<F>(&mut rand::thread_rng(), 0);
+    let (leaf_hash_params, two_to_one_params) =
+        blake3::default_config::<F>(&mut rand::thread_rng(), 0);
     let fiat_shamir_config = poseidon::default_fs_config::<F>();
 
     let params = Parameters::<F, blake3::MerkleTreeParams<F>, poseidon::Sponge<F>> {

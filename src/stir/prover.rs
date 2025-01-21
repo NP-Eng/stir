@@ -264,7 +264,7 @@ where
 
         // Here, we update the witness
         // First, compute the set of points we are actually going to query at
-        // TODO these are the r_{i, j}^shift, 
+        // TODO these are the r_{i, j}^shift,
         let stir_randomness: Vec<_> = stir_randomness_indexes
             .iter()
             .map(|index| {
@@ -305,7 +305,7 @@ where
             let den_polynomial = DensePolynomial::from_coefficients_vec(vec![-x, F::ONE]);
             shake_polynomial = shake_polynomial + (&num_polynomial / &den_polynomial);
         }
-        // sum_{r \in cal_G} (Int_calG - g(r)) / (x - r_i) 
+        // sum_{r \in cal_G} (Int_calG - g(r)) / (x - r_i)
 
         // The quotient_polynomial is then computed
         let vanishing_poly = poly_utils::interpolation::vanishing_poly(&quotient_set);
@@ -313,9 +313,27 @@ where
         // NP TODO why is this a plus? it doesn't vanish - with the minus it does
         // NP TODO there's likely a vulnerability in the verifier, since the division DOES have a (non-zero remainder)
         let numerator = &g_poly + &ans_polynomial;
+        let other_numerator = &g_poly - &ans_polynomial;
 
         // quotient_polynomial = g_i^'
         let quotient_polynomial = &numerator / &vanishing_poly;
+        let other_quotient_polynomial = &other_numerator / &vanishing_poly;
+
+        println!(
+            "EQUAL? {:?}",
+            quotient_polynomial == other_quotient_polynomial
+        );
+        // println!("quotient_polynomial: {:?}", quotient_polynomial);
+        // println!("other_quotient_polynomial: {:?}", other_quotient_polynomial);
+
+        // // NP TODO remove
+        // for point in quotient_set.iter() {
+        //     println!("numerator at {:?}: {:?}", point, numerator.evaluate(point));
+        //     println!("other_numerator at {:?}: {:?}", point, other_quotient_polynomial.evaluate(point));
+        // }
+
+        // f + g = q v + 0
+        // f - g = q2 v + 2g
 
         // This is the polynomial 1 + r * x + r^2 * x^2 + ... + r^n * x^n where n = |quotient_set|
         // NP TODO: Better use iter::successor
@@ -328,6 +346,8 @@ where
         // f_i^
         let witness_polynomial = &quotient_polynomial * &scaling_polynomial;
 
+        // NP optimisation
+        // [((rx)^n - 1) * q] / (rx - 1)
 
         // f' = [g - ans_polynomial]/[(x - a1)(x - a2)]
 
@@ -353,6 +373,31 @@ where
         )
     }
 }
+
+// V sends r_0
+
+// Round i:
+//  P sends g' = Fold(f_{i - 1}, r_{i - 1}) / some domain
+//  V sends ood randomness
+//  P sends ood answers
+//  V sends deg-corr randomness (can be swapped...)
+//  V sends STIR queries (can be swapped...)
+//  V sends r_i (can be swapped...)
+//  (P can compute the degree-corrected quotient f_i)
+
+// At any point after the round's STIR randmness (or all at the end),
+// P sends the answer and shake polynomials (after the STIR randomness)
+// V samples the shake randomness (after the above have been sent for the round)
+
+// NP TODO mention/look into batching
+
+//  V sends ood randomness
+//  P sends ood answers
+//  V sends deg-corr randomness (can be swapped...)
+//  V sends STIR queries (can be swapped...)
+
+// |quotient_set| < num_ood_samples + num_STIR_queries
+// degree_corr should have degree |quotient_set|, not num_ood_samples + num_STIR_queries
 
 #[cfg(test)]
 mod tests {
@@ -395,3 +440,29 @@ mod tests {
         }
     }
 }
+
+// * What is the difference between starting_folding_pow_bits  and
+//   final_pow_bits  (in STIRConfig )? The former is only present in stir-whir .
+//   Also, separately: can these be usize s? Why f64 ?
+//   https://github.com/WizardOfMenlo/stir-whir-scripts/blob/main/src/stir.rs#L112
+
+// * In order to compute a vanishing polynomial (x - x0) * ... * (x - x_n), one
+//   can use the generic multiplication machinery, which doesFFTs of increasing
+//   size, or simply apply the naive multiplication algorithm. The latter is
+//   faster (for points without any special distribution), right?
+// * Is it more efficient to fold evaluations instead of folding the poly and
+//   evaluating? Is folding the poly necessary in any case? Is there any way to
+//   shift a set of evaluations from a coset to another (with smaller or equal
+//   subgroup) efficiently other than iFFT + shift poly + FFT?
+// * There is an ood_error  function which is called an computed in
+//   print_rbr_summary  (it used to be in the configuration-creation functions).
+//   Should we remove this, is it relevant, ...?
+// * Minor fixes:
+//     * FftField is already bound to PrimeField:
+//       https://github.com/WizardOfMenlo/stir/blob/main/src/stir/mod.rs#L36
+//     * Config::InnerDigest already bound to Absorb:
+//       https://github.com/WizardOfMenlo/stir/blob/main/src/stir/mod.rs#L37
+//     * We can use std::successors
+//       :https://github.com/WizardOfMenlo/stir/blob/main/src/stir/prover.rs#L308
+//     * domain.scale called at each iteration of the loop:
+//       https://github.com/WizardOfMenlo/stir/blob/main/src/stir/prover.rs#L266
