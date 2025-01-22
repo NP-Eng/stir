@@ -374,30 +374,7 @@ where
     }
 }
 
-// V sends r_0
-
-// Round i:
-//  P sends g' = Fold(f_{i - 1}, r_{i - 1}) / some domain
-//  V sends ood randomness
-//  P sends ood answers
-//  V sends deg-corr randomness (can be swapped...)
-//  V sends STIR queries (can be swapped...)
-//  V sends r_i (can be swapped...)
-//  (P can compute the degree-corrected quotient f_i)
-
-// At any point after the round's STIR randmness (or all at the end),
-// P sends the answer and shake polynomials (after the STIR randomness)
-// V samples the shake randomness (after the above have been sent for the round)
-
 // NP TODO mention/look into batching
-
-//  V sends ood randomness
-//  P sends ood answers
-//  V sends deg-corr randomness (can be swapped...)
-//  V sends STIR queries (can be swapped...)
-
-// |quotient_set| < num_ood_samples + num_STIR_queries
-// degree_corr should have degree |quotient_set|, not num_ood_samples + num_STIR_queries
 
 #[cfg(test)]
 mod tests {
