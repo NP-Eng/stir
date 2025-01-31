@@ -227,7 +227,14 @@ where
         &self,
         verification_state: &VerificationState<F>,
         // NP list of {j_1, ..., j_n} such that r_{i, t}^shift = coset_shift * subgroup_generator^{j_t}
-        stir_randomness_indexes: Vec<usize>,
+        stir_randomness_indexes: Vec<usize>, // [i_1, i_2, ..., i_n]  r_
+
+        // a1  a2  a2  ak
+
+        // L_i = w^k * <w^{2^i * k}>
+        // [[
+        //      g()
+        // ]]
         oracle_answers: Vec<Vec<F>>,
     ) -> Vec<(F, F)> {
         let scaling_factor = verification_state.domain_size / self.parameters.folding_factor;
