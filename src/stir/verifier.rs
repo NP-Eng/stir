@@ -5,6 +5,8 @@ use ark_crypto_primitives::{
 use ark_ff::{batch_inversion, FftField, PrimeField};
 use ark_poly::{univariate::DensePolynomial, EvaluationDomain, Polynomial, Radix2EvaluationDomain};
 
+use core::Err;
+
 use itertools::izip;
 
 use crate::{domain::Domain, ldt::Verifier, parameters::Parameters, poly_utils, utils};
